@@ -115,11 +115,8 @@ int main(int argc, char **argv) {
   // Database insertion
   // ------------------
 
-  int i_files = 0;
-  int limit = 2;
   for (auto fname : fname_list) {
-    if (i_files == limit) continue;
-    ++i_files;
+
     cout << "."; cout.flush();
 
     BDtaunuReader *reader = PrSpRouter::CreateRootReader(fname.c_str(), data_label);
