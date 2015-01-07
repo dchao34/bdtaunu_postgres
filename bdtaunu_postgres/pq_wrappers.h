@@ -6,6 +6,9 @@
 PGconn *Connectdb(const char *conninfo);
 void Exec(PGconn *conn, const char *cmd);
 void Prepare(PGconn *conn, const char *stmtName, int nparams, const char *query);
-void Execprepared(PGconn *conn, const char *stmtName, int nparams, const char * const *paramValues);
+int Execprepared(PGconn *conn, const char *stmtName, int nparams, const char * const *paramValues);
+void CreateSavepoint(PGconn *conn, const char *spname);
+void ReleaseSavepoint(PGconn *conn, const char *spname);
+void RollbackSavepoint(PGconn *conn, const char *spname);
 
 #endif

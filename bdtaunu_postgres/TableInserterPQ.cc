@@ -49,6 +49,15 @@ TableInserterPQ::~TableInserterPQ() {
   delete[] _param_values;
 }
 
-void TableInserterPQ::exec_stmt() const {
-  Execprepared(_conn, _stmt_name.c_str(), _n_params, _param_values);
+int TableInserterPQ::exec_stmt() const {
+
+  // The insertion can fail, but could be recoverable. 
+  // Wrap save points around it. 
+  CreateSavepoint(_conn, "sp");
+  int status = Execprepared(_conn, _stmt_name.c_str(), _n_params, _param_values);
+  ReleaseSavepoint(_conn, "sp");
+  CreateSavepoint(_conn, "sp");
+  RollbackSavepoint(_conn, "sp");
+  ReleaseSavepoint(_conn, "sp");
+  return status;
 }

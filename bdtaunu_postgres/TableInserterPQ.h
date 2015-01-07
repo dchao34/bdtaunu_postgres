@@ -13,7 +13,7 @@ class TableInserterPQ {
         int n_columns, std::initializer_list<int> default_indices);
     virtual ~TableInserterPQ();
 
-    void exec_stmt() const;
+    int exec_stmt() const;
 
   protected:
     const char **_param_values;

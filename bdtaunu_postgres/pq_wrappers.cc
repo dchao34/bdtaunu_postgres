@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 
 #include <libpq-fe.h>
 
@@ -44,18 +45,53 @@ void Prepare(PGconn *conn,
   PQclear(res);
 }
 
-void Execprepared(PGconn *conn, 
-                  const char *stmtName, 
-                  int nparams, 
-                  const char * const *paramValues) {
+void CreateSavepoint(PGconn *conn, const char *spname) {
+  string cmd = "SAVEPOINT " + string(spname);
+  PGresult *res = PQexec(conn, cmd.c_str());
+  PQclear(res);
+}
+
+void ReleaseSavepoint(PGconn *conn, const char *spname) {
+  string cmd = "RELEASE " + string(spname);
+  PGresult *res = PQexec(conn, cmd.c_str());
+  PQclear(res);
+}
+
+void RollbackSavepoint(PGconn *conn, const char *spname) {
+  string cmd = "ROLLBACK TO SAVEPOINT " + string(spname);
+  PGresult *res = PQexec(conn, cmd.c_str());
+  PQclear(res);
+}
+
+int Execprepared(PGconn *conn, 
+                 const char *stmtName, 
+                 int nparams, 
+                 const char * const *paramValues) {
   PGresult *res = PQexecPrepared(conn, stmtName, nparams, 
                                  paramValues, nullptr, nullptr, 0);
   if (PQresultStatus(res) != PGRES_COMMAND_OK) {
+
     cerr << "Execprepared failed when executing prepared statement "; 
     cerr << "\"" << stmtName << "\":" << endl; 
     cerr << PQerrorMessage(conn);
-    PQclear(res);
-    exit_nicely(conn);
+
+    string errmsg = string(PQerrorMessage(conn));
+
+    // want to ignore duplicated unique keys when encountered after the first time.
+    if (errmsg.find("ERROR:  duplicate key value violates unique constraint")
+        != string::npos) {
+
+      // return a status flag to indicate that a recoverable error has occured. 
+      PQclear(res);
+      return 1;
+
+    // fatal error otherwise
+    } else {
+      PQclear(res);
+      exit_nicely(conn);
+    }
+
   }
   PQclear(res);
+  return 0;
 }

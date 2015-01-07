@@ -139,7 +139,8 @@ int main(int argc, char **argv) {
       eventmeta_inserter->set_run(coder.CodeRun(run));
       eventmeta_inserter->set_event_weight(cache.get_event_weight(data_label, run));
 
-      eventmeta_inserter->exec_stmt();
+      // just ignore the event if we encoutner a recoverable insertion failure
+      if (eventmeta_inserter->exec_stmt()) continue;
 
       // EventStatus
       eventstatus_inserter->set_reader_status(s);
