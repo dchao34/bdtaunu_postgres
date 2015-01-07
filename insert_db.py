@@ -15,6 +15,7 @@ def execute_insert(bin_path, ntp_dir, dbname, logfile, data_label, run):
 if __name__ == '__main__':
 
     import argparse
+    import time
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--insert_postgres_path", default="bin/insert_postgres",
@@ -38,6 +39,8 @@ if __name__ == '__main__':
     print 'Destination database for insertions: {0}'.format(args.dbname)
     print 'Log file output: {0}'.format(args.log_fname)
     print
+    print 'Start time: {0}.'.format(time.asctime( time.localtime(time.time()) ))
+    print
 
     data_labels = args.data_labels.split(',')
     runs = args.runs.split(',')
@@ -50,7 +53,8 @@ if __name__ == '__main__':
                                args.ntp_dir, args.dbname,
                                logfile,
                                d, r)
-                sys.stdout.write(' OK.\n')
+                sys.stdout.write(' OK. ')
+                sys.stdout.write('Finished at {0}.\n'.format(time.asctime( time.localtime(time.time()) )))
                 sys.stdout.flush()
             except subprocess.CalledProcessError:
                 print
