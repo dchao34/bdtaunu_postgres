@@ -36,7 +36,7 @@ if __name__ == '__main__':
     parser.add_argument("--create_script", default="sql/create_tables.sql",
                         help="Path to create table script.")
     parser.add_argument("--log_fname", default="log/initialize_db.log",
-                        help="Path to create table script.")
+                        help="Log file associated to the launching of this script.")
     args = parser.parse_args()
 
     logfile = open(args.log_fname, 'w')
